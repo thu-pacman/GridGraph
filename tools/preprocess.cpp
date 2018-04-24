@@ -14,14 +14,13 @@ Copyright (c) 2014-2015 Xiaowei Zhu, Tsinghua University
    limitations under the License.
 */
 
-#include <stdio.h>
-#include <stdlib.h>
+#include <cstdio>
+#include <cstdlib>
 #include <unistd.h>
 #include <fcntl.h>
-#include <malloc.h>
-#include <errno.h>
-#include <assert.h>
-#include <string.h>
+#include <cerrno>
+#include <cassert>
+#include <cstring>
 
 #include <string>
 #include <vector>
@@ -36,6 +35,8 @@ Copyright (c) 2014-2015 Xiaowei Zhu, Tsinghua University
 #include "core/atomic.hpp"
 
 long PAGESIZE = 4096;
+
+#define memalign(alignment, size) malloc(size)
 
 void generate_edge_grid(std::string input, std::string output, VertexId vertices, int partitions, int edge_type) {
 	int parallelism = std::thread::hardware_concurrency();
@@ -267,8 +268,8 @@ void generate_edge_grid(std::string input, std::string output, VertexId vertices
 
 int main(int argc, char ** argv) {
 	int opt;
-	std::string input = "";
-	std::string output = "";
+	std::string input;
+	std::string output;
 	VertexId vertices = -1;
 	int partitions = -1;
 	int edge_type = 0;
