@@ -284,7 +284,7 @@ public:
 		}
 		int read_mode;
 		if (memory_bytes < total_bytes) {
-			read_mode = O_RDONLY | O_DIRECT;
+			read_mode = O_RDONLY | O_SYNC;
 			// printf("use direct I/O\n");
 		} else {
 			read_mode = O_RDONLY;

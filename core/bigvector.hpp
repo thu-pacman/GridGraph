@@ -90,7 +90,7 @@ public:
 			}
 			close(fout);
 		}
-		fd = open(path.c_str(), O_RDWR | O_DIRECT);
+		fd = open(path.c_str(), O_RDWR | O_SYNC);
 		assert(fd!=-1);
 		open_mmap();
 	}
