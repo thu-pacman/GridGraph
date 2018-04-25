@@ -74,7 +74,7 @@ public:
 			FILE * fout = fopen(path.c_str(), "wb");
 			fclose(fout);
 		}
-		if (file_size(path) != sizeof(T) * length) {
+		if (static_cast<unsigned>(file_size(path)) != sizeof(T) * length) {
 			long file_length = sizeof(T) * length;
 			assert(truncate(path.c_str(), file_length)!=-1);
 			int fout = open(path.c_str(), O_WRONLY);

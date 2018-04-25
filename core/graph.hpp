@@ -131,13 +131,13 @@ public:
 		column_offset = new long [partitions*partitions+1];
 		int fin_column_offset = open((path+"/column_offset").c_str(), O_RDONLY);
 		bytes = read(fin_column_offset, column_offset, sizeof(long)*(partitions*partitions+1));
-		assert(bytes==sizeof(long)*(partitions*partitions+1));
+		assert(bytes==static_cast<unsigned>(sizeof(long)*(partitions*partitions+1)));
 		close(fin_column_offset);
 
 		row_offset = new long [partitions*partitions+1];
 		int fin_row_offset = open((path+"/row_offset").c_str(), O_RDONLY);
 		bytes = read(fin_row_offset, row_offset, sizeof(long)*(partitions*partitions+1));
-		assert(bytes==sizeof(long)*(partitions*partitions+1));
+		assert(bytes==static_cast<unsigned>(sizeof(long)*(partitions*partitions+1)));
 		close(fin_row_offset);
 	}
 
