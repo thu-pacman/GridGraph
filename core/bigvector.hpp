@@ -1,5 +1,6 @@
 /*
 Copyright (c) 2014-2015 Xiaowei Zhu, Tsinghua University
+Copyright (c) 2018 Hippolyte Barraud, Tsinghua University
 
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
