@@ -21,9 +21,10 @@ Copyright (c) 2014-2015 Xiaowei Zhu, Tsinghua University
 #include <stdlib.h>
 #include <math.h>
 #include <unistd.h>
-#include <malloc.h>
+#ifdef USE_OPENMP
 #include <omp.h>
-#include <string.h>
+#endif
+#include <cstring>
 
 #include <thread>
 #include <vector>

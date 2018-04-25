@@ -17,14 +17,20 @@ project(GridGraph)
 
 #GLOBALS
 set(CMAKE_CXX_STANDARD 14)
-set(OPTS -march=native -Wall -Wextra -Werror -O3)
+set(OPTS -march=native -Wall -Wextra -O3)
 file(GLOB CORE_HEADERS "core/*.hpp")
 find_package(Threads REQUIRED)
+find_package(Boost COMPONENTS filesystem REQUIRED)
 
 option(BUILD_EXAMPLES "build examples" ON)
-option(USE_OPENMP "use OpenMP multithreading" ON)
 
 add_subdirectory(tools)
+
+if (CMAKE_SYSTEM_NAME STREQUAL "Linux")
+    add_definitions(-DLINUX)
+elseif(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
+    add_definitions(-DDARWIN)
+endif ()
 
 if (BUILD_EXAMPLES)
     add_subdirectory(examples)

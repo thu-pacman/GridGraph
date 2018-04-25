@@ -14,8 +14,12 @@ limitations under the License.]]
 
 file(GLOB EXAMPLES_SRC "*.cpp")
 
-if (${USE_OPENMP})
-    find_package(OpenMP REQUIRED)
+find_package(OpenMP)
+
+if (OpenMP_CXX_FOUND)
+    add_definitions(-DUSE_OPENMP)
+else()
+    message(WARNING "OpenMP could not be found. Building without threading support.")
 endif ()
 
 foreach(EXAMPLE_SRC ${EXAMPLES_SRC})
@@ -24,12 +28,12 @@ foreach(EXAMPLE_SRC ${EXAMPLES_SRC})
 
     add_executable(${TRAGET_NAME} ${EXAMPLE_SRC} ${CORE_HEADERS})
     target_compile_options(${TRAGET_NAME} PUBLIC ${OPTS})
-    target_include_directories(${TRAGET_NAME} PUBLIC ..)
+    target_include_directories(${TRAGET_NAME} PUBLIC .. ${Boost_INCLUDE_DIRS})
 
-    if (${USE_OPENMP})
-        target_link_libraries(${TRAGET_NAME} PUBLIC Threads::Threads OpenMP::OpenMP_CXX)
+    if (${OpenMP_CXX_FOUND})
+        target_link_libraries(${TRAGET_NAME} PUBLIC Threads::Threads ${Boost_LIBRARIES} OpenMP::OpenMP_CXX )
     else()
-        target_link_libraries(${TRAGET_NAME} PUBLIC Threads::Threads)
+        target_link_libraries(${TRAGET_NAME} PUBLIC Threads::Threads ${Boost_LIBRARIES})
     endif ()
 
 endforeach(EXAMPLE_SRC)
