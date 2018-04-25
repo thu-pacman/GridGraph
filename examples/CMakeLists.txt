@@ -19,7 +19,7 @@ find_package(OpenMP)
 if (OpenMP_CXX_FOUND)
     add_definitions(-DUSE_OPENMP)
 else()
-    message(WARNING "OpenMP could not be found. Building without threading support.")
+    message(FATAL_ERROR "OpenMP could not be found. Aborting")
 endif ()
 
 foreach(EXAMPLE_SRC ${EXAMPLES_SRC})
