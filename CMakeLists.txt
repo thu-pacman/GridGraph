@@ -20,7 +20,6 @@ set(CMAKE_CXX_STANDARD 14)
 set(OPTS -march=native -Wall -Wextra -Werror -Wno-unused-parameter -Wno-unused-variable -O3)
 file(GLOB CORE_HEADERS "core/*.hpp")
 find_package(Threads REQUIRED)
-find_package(Boost COMPONENTS filesystem REQUIRED)
 
 option(BUILD_EXAMPLES "build examples" ON)
 

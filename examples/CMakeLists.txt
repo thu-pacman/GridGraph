@@ -28,12 +28,12 @@ foreach(EXAMPLE_SRC ${EXAMPLES_SRC})
 
     add_executable(${TRAGET_NAME} ${EXAMPLE_SRC} ${CORE_HEADERS})
     target_compile_options(${TRAGET_NAME} PUBLIC ${OPTS})
-    target_include_directories(${TRAGET_NAME} PUBLIC .. ${Boost_INCLUDE_DIRS})
+    target_include_directories(${TRAGET_NAME} PUBLIC ..)
 
     if (${OpenMP_CXX_FOUND})
-        target_link_libraries(${TRAGET_NAME} PUBLIC Threads::Threads ${Boost_LIBRARIES} OpenMP::OpenMP_CXX )
+        target_link_libraries(${TRAGET_NAME} PUBLIC Threads::Threads OpenMP::OpenMP_CXX )
     else()
-        target_link_libraries(${TRAGET_NAME} PUBLIC Threads::Threads ${Boost_LIBRARIES})
+        target_link_libraries(${TRAGET_NAME} PUBLIC Threads::Threads)
     endif ()
 
 endforeach(EXAMPLE_SRC)
