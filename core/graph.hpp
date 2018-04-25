@@ -17,9 +17,9 @@ Copyright (c) 2014-2015 Xiaowei Zhu, Tsinghua University
 #ifndef GRAPH_H
 #define GRAPH_H
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <math.h>
+#include <cstdio>
+#include <cstdlib>
+#include <cmath>
 #include <unistd.h>
 #ifdef USE_OPENMP
 #include <omp.h>
@@ -322,7 +322,7 @@ public:
 				}, ti);
 			}
 			fin = open((path+"/row").c_str(), read_mode);
-			posix_fadvise(fin, 0, 0, POSIX_FADV_SEQUENTIAL);
+			//posix_fadvise(fin, 0, 0, POSIX_FADV_SEQUENTIAL); //This is mostly useless on modern system
 			for (int i=0;i<partitions;i++) {
 				if (!should_access_shard[i]) continue;
 				for (int j=0;j<partitions;j++) {
@@ -351,7 +351,7 @@ public:
 			break;
 		case 1: // target oriented update
 			fin = open((path+"/column").c_str(), read_mode);
-			posix_fadvise(fin, 0, 0, POSIX_FADV_SEQUENTIAL);
+			//posix_fadvise(fin, 0, 0, POSIX_FADV_SEQUENTIAL); //This is mostly useless on modern system
 
 			for (int cur_partition=0;cur_partition<partitions;cur_partition+=partition_batch) {
 				VertexId begin_vid, end_vid;

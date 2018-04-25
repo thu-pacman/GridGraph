@@ -17,16 +17,21 @@ Copyright (c) 2014-2015 Xiaowei Zhu, Tsinghua University
 #ifndef BIGVECTOR_H
 #define BIGVECTOR_H
 
-#include <assert.h>
+#include <cassert>
 #include <unistd.h>
 #include <fcntl.h>
 #include <sys/mman.h>
+#ifdef USE_OPENMP
 #include <omp.h>
+#endif
 
 #include <thread>
+#include <string>
 
 #include "core/filesystem.hpp"
 #include "core/partition.hpp"
+
+#define memalign(alignment, size) malloc(size)
 
 template <typename T>
 class BigVector {
@@ -90,8 +95,8 @@ public:
 		open_mmap();
 	}
 	void open_mmap() {
-		int ret = posix_fadvise(fd, 0, 0, POSIX_FADV_SEQUENTIAL);
-		assert(ret==0);
+		//int ret = posix_fadvise(fd, 0, 0, POSIX_FADV_SEQUENTIAL); //This is mostly useless on modern system
+		//assert(ret==0);
 		data = (T *)mmap(NULL, sizeof(T) * length, PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0);
 		assert(data!=MAP_FAILED);
 		is_open = true;
