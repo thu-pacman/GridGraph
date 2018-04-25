@@ -21,6 +21,9 @@ set(OPTS -march=native -Wall -Wextra -Werror -Wno-unused-parameter -Wno-unused-v
 file(GLOB CORE_HEADERS "core/*.hpp")
 find_package(Threads REQUIRED)
 
+#OUTPUT DIR
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
+
 option(BUILD_EXAMPLES "build examples" ON)
 
 add_subdirectory(tools)
