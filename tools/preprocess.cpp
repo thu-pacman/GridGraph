@@ -37,8 +37,6 @@ Copyright (c) 2018 Hippolyte Barraud, Tsinghua University
 
 long PAGESIZE = 4096;
 
-#define memalign(alignment, size) malloc(size)
-
 void generate_edge_grid(std::string input, std::string output, VertexId vertices, int partitions, int edge_type) {
 	int parallelism = std::thread::hardware_concurrency();
 	int edge_unit;

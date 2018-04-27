@@ -32,14 +32,6 @@ Copyright (c) 2018 Hippolyte Barraud, Tsinghua University
 #include "core/filesystem.hpp"
 #include "core/partition.hpp"
 
-void *memalign(size_t alignment, size_t size) {
-	void *ret;
-	if (posix_memalign(&ret, alignment, size) != 0) {
-	    ret = nullptr;
-	};
-	return ret;
-}
-
 template <typename T>
 class BigVector {
 	std::string path;
