@@ -19,7 +19,8 @@ Copyright (c) 2014-2015 Xiaowei Zhu, Tsinghua University
 
 #include <sys/stat.h>
 #include <sys/types.h>
-#include <errno.h>
+#include <cerrno>
+#include <string>
 
 inline bool file_exists(std::string filename) {
 	struct stat st;

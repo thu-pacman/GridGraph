@@ -31,6 +31,7 @@ Copyright (c) 2018 Hippolyte Barraud, Tsinghua University
 
 #include "core/filesystem.hpp"
 #include "core/partition.hpp"
+#include "core/atomic.hpp"
 
 template <typename T>
 class BigVector {

@@ -17,6 +17,9 @@ Copyright (c) 2014-2015 Xiaowei Zhu, Tsinghua University
 #ifndef PARTITION_H
 #define PARTITION_H
 
+#include <cstddef>
+#include <utility>
+
 inline size_t get_partition_id(const size_t vertices, const size_t partitions, const size_t vertex_id) {
         if (vertices % partitions==0) {
                 const size_t partition_size = vertices / partitions;
