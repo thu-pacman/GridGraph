@@ -1,0 +1,1 @@
+/usr/bin/c++     CMakeFiles/mis.dir/mis.cpp.o  -o ../bin/mis -lpthread /usr/lib/gcc/x86_64-linux-gnu/7/libgomp.so -lpthread 

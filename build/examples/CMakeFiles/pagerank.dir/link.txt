@@ -1,0 +1,1 @@
+/usr/bin/c++     CMakeFiles/pagerank.dir/pagerank.cpp.o  -o ../bin/pagerank -lpthread /usr/lib/gcc/x86_64-linux-gnu/7/libgomp.so -lpthread 

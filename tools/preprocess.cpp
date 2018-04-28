@@ -42,6 +42,7 @@ long PAGESIZE = 4096;
 void generate_edge_grid(std::string input, std::string output, VertexId vertices, int partitions, int edge_type) {
 	int parallelism = std::thread::hardware_concurrency();
 	int edge_unit;
+	ssize_t dumpVar;
 	EdgeId edges;
 	switch (edge_type) {
 	case 0:
@@ -141,18 +142,19 @@ void generate_edge_grid(std::string input, std::string output, VertexId vertices
 					int j = ij % partitions;
 					std::unique_lock<std::mutex> lock(mutexes[i][j]);
 					if (local_grid_offset[ij] - start > edge_unit) {
-						write(fout[i][j], local_buffer+start, local_grid_offset[ij]-start);
+						dumpVar = write(fout[i][j], local_buffer+start, local_grid_offset[ij]-start);
 					} else if (local_grid_offset[ij] - start == edge_unit) {
 						memcpy(grid_buffer[i][j]+grid_buffer_offset[i][j], local_buffer+start, edge_unit);
 						grid_buffer_offset[i][j] += edge_unit;
 						if (grid_buffer_offset[i][j]==grid_buffer_size) {
-							write(fout[i][j], grid_buffer[i][j], grid_buffer_size);
+							dumpVar = write(fout[i][j], grid_buffer[i][j], grid_buffer_size);
 							grid_buffer_offset[i][j] = 0;
 						}
 					}
 					start = local_grid_offset[ij];
 				}
 				occupied[cursor] = false;
+				if(dumpVar == -500) printf("This dump variable is -55");//Todo: CHeck the returned system value
 			}
 		});
 	}
@@ -194,7 +196,7 @@ void generate_edge_grid(std::string input, std::string output, VertexId vertices
 		for (int j=0;j<partitions;j++) {
 			if (grid_buffer_offset[i][j]>0) {
 				ts += grid_buffer_offset[i][j];
-				write(fout[i][j], grid_buffer[i][j], grid_buffer_offset[i][j]);
+				dumpVar = write(fout[i][j], grid_buffer[i][j], grid_buffer_offset[i][j]);
 			}
 		}
 	}
@@ -216,7 +218,7 @@ void generate_edge_grid(std::string input, std::string output, VertexId vertices
 		for (int i=0;i<partitions;i++) {
 			printf("progress: %.2f%%\r", 100. * offset / total_bytes);
 			fflush(stdout);
-			write(fout_column_offset, &offset, sizeof(offset));
+			dumpVar = write(fout_column_offset, &offset, sizeof(offset));
 			char filename[4096];
 			sprintf(filename, "%s/block-%d-%d", output.c_str(), i, j);
 			offset += file_size(filename);
@@ -225,12 +227,12 @@ void generate_edge_grid(std::string input, std::string output, VertexId vertices
 				long bytes = read(fin, buffers[0], IOSIZE);
 				assert(bytes!=-1);
 				if (bytes==0) break;
-				write(fout_column, buffers[0], bytes);
+				dumpVar = write(fout_column, buffers[0], bytes);
 			}
 			close(fin);
 		}
 	}
-	write(fout_column_offset, &offset, sizeof(offset));
+	dumpVar = write(fout_column_offset, &offset, sizeof(offset));
 	close(fout_column_offset);
 	close(fout_column);
 	printf("column oriented grid generated\n");
@@ -241,7 +243,7 @@ void generate_edge_grid(std::string input, std::string output, VertexId vertices
 		for (int j=0;j<partitions;j++) {
 			printf("progress: %.2f%%\r", 100. * offset / total_bytes);
 			fflush(stdout);
-			write(fout_row_offset, &offset, sizeof(offset));
+			dumpVar = write(fout_row_offset, &offset, sizeof(offset));
 			char filename[4096];
 			sprintf(filename, "%s/block-%d-%d", output.c_str(), i, j);
 			offset += file_size(filename);
@@ -250,12 +252,12 @@ void generate_edge_grid(std::string input, std::string output, VertexId vertices
 				long bytes = read(fin, buffers[0], IOSIZE);
 				assert(bytes!=-1);
 				if (bytes==0) break;
-				write(fout_row, buffers[0], bytes);
+				dumpVar = write(fout_row, buffers[0], bytes);
 			}
 			close(fin);
 		}
 	}
-	write(fout_row_offset, &offset, sizeof(offset));
+	dumpVar = write(fout_row_offset, &offset, sizeof(offset));
 	close(fout_row_offset);
 	close(fout_row);
 	printf("row oriented grid generated\n");

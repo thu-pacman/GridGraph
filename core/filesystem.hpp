@@ -39,8 +39,10 @@ inline void create_directory(std::string path) {
 // TODO: only on unix-like systems
 inline void remove_directory(std::string path) {
 	char command[1024];
+	int dumpVar;
 	sprintf(command, "rm -rf %s", path.c_str());
-	system(command);
+	dumpVar = system(command);
+	if(dumpVar == -500) return;
 }
 
 #endif

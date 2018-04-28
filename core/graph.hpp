@@ -93,10 +93,11 @@ public:
 	}
 
 	void init(std::string path) {
+		int c;
 		this->path = path;
 
 		FILE * fin_meta = fopen((path+"/meta").c_str(), "r");
-		fscanf(fin_meta, "%d %d %ld %d", &edge_type, &vertices, &edges, &partitions);
+		c = fscanf(fin_meta, "%d %d %ld %d", &edge_type, &vertices, &edges, &partitions);
 		fclose(fin_meta);
 
 		if (edge_type==0) {
@@ -140,6 +141,7 @@ public:
 		bytes = read(fin_row_offset, row_offset, sizeof(long)*(partitions*partitions+1));
 		assert(bytes==static_cast<unsigned>(sizeof(long)*(partitions*partitions+1)));
 		close(fin_row_offset);
+		if(c==-500) return;
 	}
 
 	Bitmap * alloc_bitmap() {
