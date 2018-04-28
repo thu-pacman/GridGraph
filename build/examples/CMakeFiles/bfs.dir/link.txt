@@ -1,1 +1,0 @@
-/usr/bin/c++     CMakeFiles/bfs.dir/bfs.cpp.o  -o ../bin/bfs -lpthread /usr/lib/gcc/x86_64-linux-gnu/7/libgomp.so -lpthread 

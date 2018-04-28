@@ -1,1 +1,0 @@
-/usr/bin/c++     CMakeFiles/wcc.dir/wcc.cpp.o  -o ../bin/wcc -lpthread /usr/lib/gcc/x86_64-linux-gnu/7/libgomp.so -lpthread 
