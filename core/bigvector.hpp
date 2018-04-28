@@ -1,5 +1,6 @@
 /*
 Copyright (c) 2014-2015 Xiaowei Zhu, Tsinghua University
+Copyright (c) 2018 Hippolyte Barraud, Tsinghua University
 
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
@@ -17,16 +18,27 @@ Copyright (c) 2014-2015 Xiaowei Zhu, Tsinghua University
 #ifndef BIGVECTOR_H
 #define BIGVECTOR_H
 
-#include <assert.h>
+#include <cassert>
 #include <unistd.h>
 #include <fcntl.h>
 #include <sys/mman.h>
+#ifdef USE_OPENMP
 #include <omp.h>
+#endif
 
 #include <thread>
+#include <string>
 
 #include "core/filesystem.hpp"
 #include "core/partition.hpp"
+
+void *memalign(size_t alignment, size_t size) {
+	void *ret;
+	if (posix_memalign(&ret, alignment, size) != 0) {
+	    ret = nullptr;
+	};
+	return ret;
+}
 
 template <typename T>
 class BigVector {
@@ -68,7 +80,7 @@ public:
 			FILE * fout = fopen(path.c_str(), "wb");
 			fclose(fout);
 		}
-		if (file_size(path) != sizeof(T) * length) {
+		if (static_cast<unsigned>(file_size(path)) != sizeof(T) * length) {
 			long file_length = sizeof(T) * length;
 			assert(truncate(path.c_str(), file_length)!=-1);
 			int fout = open(path.c_str(), O_WRONLY);
@@ -85,13 +97,13 @@ public:
 			}
 			close(fout);
 		}
-		fd = open(path.c_str(), O_RDWR | O_DIRECT);
+		fd = open(path.c_str(), O_RDWR | O_SYNC);
 		assert(fd!=-1);
 		open_mmap();
 	}
 	void open_mmap() {
-		int ret = posix_fadvise(fd, 0, 0, POSIX_FADV_SEQUENTIAL);
-		assert(ret==0);
+		//int ret = posix_fadvise(fd, 0, 0, POSIX_FADV_SEQUENTIAL); //This is mostly useless on modern system
+		//assert(ret==0);
 		data = (T *)mmap(NULL, sizeof(T) * length, PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0);
 		assert(data!=MAP_FAILED);
 		is_open = true;
