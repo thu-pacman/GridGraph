@@ -1,3 +1,0 @@
-git clone https://github.com/thu-pacman/GridGraph.git
-git fetch origin pull/5/head
-git checkout -b pullrequest FETCH_HEAD
