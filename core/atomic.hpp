@@ -18,8 +18,8 @@ Copyright (c) 2014-2015 Xiaowei Zhu, Tsinghua University
 #define ATOMIC_H
 
 #include <cstdio>
-#include <stdlib.h>
-#include <assert.h>
+#include <cstdlib>
+#include <cassert>
 
 template <class ET>
 inline bool cas(ET *ptr, ET oldv, ET newv) {
