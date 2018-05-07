@@ -17,16 +17,16 @@ Copyright (c) 2014-2015 Xiaowei Zhu, Tsinghua University
 #ifndef ATOMIC_H
 #define ATOMIC_H
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <assert.h>
+#include <cstdio>
+#include <cstdlib>
+#include <cassert>
 
 template <class ET>
 inline bool cas(ET *ptr, ET oldv, ET newv) {
-	if (sizeof(ET) == 8) {
-		return __sync_bool_compare_and_swap((long*)ptr, *((long*)&oldv), *((long*)&newv));
-	} else if (sizeof(ET) == 4) {
-		return __sync_bool_compare_and_swap((int*)ptr, *((int*)&oldv), *((int*)&newv));
+	if (sizeof(ET) == sizeof(uint64_t)) {
+		return __sync_bool_compare_and_swap((uint64_t*)ptr, (uint64_t)oldv, (uint64_t)newv);
+	} else if (sizeof(ET) == sizeof(uint32_t)) {
+		return __sync_bool_compare_and_swap((uint32_t*)ptr, (uint32_t)oldv, (uint32_t)newv);
 	} else {
 		assert(false);
 	}
@@ -45,6 +45,14 @@ inline void write_add(ET *a, ET b) {
 	volatile ET newV, oldV;
 	do {oldV = *a; newV = oldV + b;}
 	while (!cas(a, oldV, newV));
+}
+
+inline void *memalign(size_t alignment, size_t size) {
+	void *ret;
+	if (posix_memalign(&ret, alignment, size) != 0) {
+		ret = nullptr;
+	};
+	return ret;
 }
 
 #endif

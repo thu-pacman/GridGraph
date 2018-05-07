@@ -17,6 +17,8 @@ Copyright (c) 2014-2015 Xiaowei Zhu, Tsinghua University
 #ifndef BITMAP_H
 #define BITMAP_H
 
+#include <cstddef>
+
 #define WORD_OFFSET(i) (i >> 6)
 #define BIT_OFFSET(i) (i & 0x3f)
 

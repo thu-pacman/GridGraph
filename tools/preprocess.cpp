@@ -1,5 +1,6 @@
 /*
 Copyright (c) 2014-2015 Xiaowei Zhu, Tsinghua University
+Copyright (c) 2018 Hippolyte Barraud, Tsinghua University
 
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
@@ -14,14 +15,13 @@ Copyright (c) 2014-2015 Xiaowei Zhu, Tsinghua University
    limitations under the License.
 */
 
-#include <stdio.h>
-#include <stdlib.h>
+#include <cstdio>
+#include <cstdlib>
 #include <unistd.h>
 #include <fcntl.h>
-#include <malloc.h>
-#include <errno.h>
-#include <assert.h>
-#include <string.h>
+#include <cerrno>
+#include <cassert>
+#include <cstring>
 
 #include <string>
 #include <vector>
@@ -267,8 +267,8 @@ void generate_edge_grid(std::string input, std::string output, VertexId vertices
 
 int main(int argc, char ** argv) {
 	int opt;
-	std::string input = "";
-	std::string output = "";
+	std::string input;
+	std::string output;
 	VertexId vertices = -1;
 	int partitions = -1;
 	int edge_type = 0;

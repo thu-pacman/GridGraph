@@ -19,7 +19,8 @@ Copyright (c) 2014-2015 Xiaowei Zhu, Tsinghua University
 
 #include <sys/stat.h>
 #include <sys/types.h>
-#include <errno.h>
+#include <cerrno>
+#include <string>
 
 inline bool file_exists(std::string filename) {
 	struct stat st;
@@ -28,12 +29,14 @@ inline bool file_exists(std::string filename) {
 
 inline long file_size(std::string filename) {
 	struct stat st;
-	assert(stat(filename.c_str(), &st)==0);
+	auto ret = stat(filename.c_str(), &st);
+	assert(ret == 0);
 	return st.st_size;
 }
 
 inline void create_directory(std::string path) {
-	assert(mkdir(path.c_str(), 0764)==0 || errno==EEXIST);
+	auto ret = mkdir(path.c_str(), 0764);
+	assert(ret == 0 || errno == EEXIST);
 }
 
 // TODO: only on unix-like systems

@@ -1,5 +1,6 @@
 /*
 Copyright (c) 2014-2015 Xiaowei Zhu, Tsinghua University
+Copyright (c) 2018 Hippolyte Barraud, Tsinghua University
 
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
@@ -17,16 +18,19 @@ Copyright (c) 2014-2015 Xiaowei Zhu, Tsinghua University
 #ifndef GRAPH_H
 #define GRAPH_H
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <math.h>
+#include <cstdio>
+#include <cstdlib>
+#include <cmath>
 #include <unistd.h>
-#include <malloc.h>
+#ifdef USE_OPENMP
 #include <omp.h>
-#include <string.h>
+#endif
+#include <cstring>
+#include <optional>
 
 #include <thread>
 #include <vector>
+#include <functional>
 
 #include "core/constants.hpp"
 #include "core/type.hpp"
@@ -129,13 +133,13 @@ public:
 		column_offset = new long [partitions*partitions+1];
 		int fin_column_offset = open((path+"/column_offset").c_str(), O_RDONLY);
 		bytes = read(fin_column_offset, column_offset, sizeof(long)*(partitions*partitions+1));
-		assert(bytes==sizeof(long)*(partitions*partitions+1));
+		assert(bytes==static_cast<unsigned>(sizeof(long)*(partitions*partitions+1)));
 		close(fin_column_offset);
 
 		row_offset = new long [partitions*partitions+1];
 		int fin_row_offset = open((path+"/row_offset").c_str(), O_RDONLY);
 		bytes = read(fin_row_offset, row_offset, sizeof(long)*(partitions*partitions+1));
-		assert(bytes==sizeof(long)*(partitions*partitions+1));
+		assert(bytes==static_cast<unsigned>(sizeof(long)*(partitions*partitions+1)));
 		close(fin_row_offset);
 	}
 
@@ -283,14 +287,14 @@ public:
 		}
 		int read_mode;
 		if (memory_bytes < total_bytes) {
-			read_mode = O_RDONLY | O_DIRECT;
+			read_mode = O_RDONLY | O_SYNC;
 			// printf("use direct I/O\n");
 		} else {
 			read_mode = O_RDONLY;
 			// printf("use buffered I/O\n");
 		}
 
-		int fin;
+		std::optional<int> fin;
 		long offset = 0;
 		switch(update_mode) {
 		case 0: // source oriented update
@@ -321,7 +325,7 @@ public:
 				}, ti);
 			}
 			fin = open((path+"/row").c_str(), read_mode);
-			posix_fadvise(fin, 0, 0, POSIX_FADV_SEQUENTIAL);
+			//posix_fadvise(fin, 0, 0, POSIX_FADV_SEQUENTIAL); //This is mostly useless on modern system
 			for (int i=0;i<partitions;i++) {
 				if (!should_access_shard[i]) continue;
 				for (int j=0;j<partitions;j++) {
@@ -332,11 +336,11 @@ public:
 					long end_offset = row_offset[i*partitions+j+1];
 					if (end_offset <= offset) continue;
 					while (end_offset - offset >= IOSIZE) {
-						tasks.push(std::make_tuple(fin, offset, IOSIZE));
+						tasks.push(std::make_tuple(*fin, offset, IOSIZE));
 						offset += IOSIZE;
 					}
 					if (end_offset > offset) {
-						tasks.push(std::make_tuple(fin, offset, (end_offset - offset + PAGESIZE - 1) / PAGESIZE * PAGESIZE));
+						tasks.push(std::make_tuple(*fin, offset, (end_offset - offset + PAGESIZE - 1) / PAGESIZE * PAGESIZE));
 						offset += (end_offset - offset + PAGESIZE - 1) / PAGESIZE * PAGESIZE;
 					}
 				}
@@ -350,7 +354,7 @@ public:
 			break;
 		case 1: // target oriented update
 			fin = open((path+"/column").c_str(), read_mode);
-			posix_fadvise(fin, 0, 0, POSIX_FADV_SEQUENTIAL);
+			//posix_fadvise(fin, 0, 0, POSIX_FADV_SEQUENTIAL); //This is mostly useless on modern system
 
 			for (int cur_partition=0;cur_partition<partitions;cur_partition+=partition_batch) {
 				VertexId begin_vid, end_vid;
@@ -403,11 +407,11 @@ public:
 						long end_offset = column_offset[j*partitions+i+1];
 						if (end_offset <= offset) continue;
 						while (end_offset - offset >= IOSIZE) {
-							tasks.push(std::make_tuple(fin, offset, IOSIZE));
+							tasks.push(std::make_tuple(*fin, offset, IOSIZE));
 							offset += IOSIZE;
 						}
 						if (end_offset > offset) {
-							tasks.push(std::make_tuple(fin, offset, (end_offset - offset + PAGESIZE - 1) / PAGESIZE * PAGESIZE));
+							tasks.push(std::make_tuple(*fin, offset, (end_offset - offset + PAGESIZE - 1) / PAGESIZE * PAGESIZE));
 							offset += (end_offset - offset + PAGESIZE - 1) / PAGESIZE * PAGESIZE;
 						}
 					}
@@ -427,7 +431,10 @@ public:
 			assert(false);
 		}
 
-		close(fin);
+		if (fin) {
+            close(*fin);
+		}
+
 		// printf("streamed %ld bytes of edges\n", read_bytes);
 		return value;
 	}
