@@ -16,7 +16,7 @@ cmake_minimum_required(VERSION 3.9)
 project(GridGraph)
 
 #GLOBALS
-set(CMAKE_CXX_STANDARD 14)
+set(CMAKE_CXX_STANDARD 17)
 set(OPTS -march=native;-Wall;-Wextra;-Werror;-Wno-unused;-Wno-unused-parameter;-O3)
 file(GLOB CORE_HEADERS "core/*.hpp")
 find_package(Threads REQUIRED)

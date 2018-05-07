@@ -26,6 +26,7 @@ Copyright (c) 2018 Hippolyte Barraud, Tsinghua University
 #include <omp.h>
 #endif
 #include <cstring>
+#include <optional>
 
 #include <thread>
 #include <vector>
@@ -293,7 +294,7 @@ public:
 			// printf("use buffered I/O\n");
 		}
 
-		int fin;
+		std::optional<int> fin;
 		long offset = 0;
 		switch(update_mode) {
 		case 0: // source oriented update
@@ -335,11 +336,11 @@ public:
 					long end_offset = row_offset[i*partitions+j+1];
 					if (end_offset <= offset) continue;
 					while (end_offset - offset >= IOSIZE) {
-						tasks.push(std::make_tuple(fin, offset, IOSIZE));
+						tasks.push(std::make_tuple(*fin, offset, IOSIZE));
 						offset += IOSIZE;
 					}
 					if (end_offset > offset) {
-						tasks.push(std::make_tuple(fin, offset, (end_offset - offset + PAGESIZE - 1) / PAGESIZE * PAGESIZE));
+						tasks.push(std::make_tuple(*fin, offset, (end_offset - offset + PAGESIZE - 1) / PAGESIZE * PAGESIZE));
 						offset += (end_offset - offset + PAGESIZE - 1) / PAGESIZE * PAGESIZE;
 					}
 				}
@@ -406,11 +407,11 @@ public:
 						long end_offset = column_offset[j*partitions+i+1];
 						if (end_offset <= offset) continue;
 						while (end_offset - offset >= IOSIZE) {
-							tasks.push(std::make_tuple(fin, offset, IOSIZE));
+							tasks.push(std::make_tuple(*fin, offset, IOSIZE));
 							offset += IOSIZE;
 						}
 						if (end_offset > offset) {
-							tasks.push(std::make_tuple(fin, offset, (end_offset - offset + PAGESIZE - 1) / PAGESIZE * PAGESIZE));
+							tasks.push(std::make_tuple(*fin, offset, (end_offset - offset + PAGESIZE - 1) / PAGESIZE * PAGESIZE));
 							offset += (end_offset - offset + PAGESIZE - 1) / PAGESIZE * PAGESIZE;
 						}
 					}
@@ -430,7 +431,10 @@ public:
 			assert(false);
 		}
 
-		close(fin);
+		if (fin) {
+            close(*fin);
+		}
+
 		// printf("streamed %ld bytes of edges\n", read_bytes);
 		return value;
 	}
